@@ -6,7 +6,8 @@ import (
 	"crypto/sha256"
 	"time"
 	"strconv"
-	"reflect"
+//	"reflect"
+	"math/rand"
 )
 
 type Block struct {
@@ -18,20 +19,29 @@ type Block struct {
 }
 
 func (b *Block) SetHash() {
+
 	var nuonce_i int64
-	nuonce_i = 0
+	nuonce_i = int64(rand.Intn(100000000))
+
+	keta := 6
+
+	zeros := ""
+	for i:=0;i<keta;i++{
+		zeros += "0"
+	}
+
 	for {
 		timestamp := []byte(strconv.FormatInt(b.Timestamp, 10))
 		nuonce := []byte(strconv.FormatInt(nuonce_i, 10))
 		headers := bytes.Join([][]byte{b.PrevBlockHash, b.Data, timestamp, nuonce}, []byte{})
 		hash := sha256.Sum256(headers)
 	
-		b.Hash = hash[:]
-		if reflect.DeepEqual(b.Hash[0:3],[]byte("000")[0:3]){
-			fmt.Println(b.Hash[0:3])
-			fmt.Println([]byte("000")[0:3])
-
+		hash_s := fmt.Sprintf("%x",hash)
+		
+		if hash_s[0:keta] == zeros[0:keta] {
+			b.Hash = hash[:]
 			b.Nuonce = nuonce_i
+			fmt.Println(hash_s)
 			break
 		}
 		nuonce_i++
@@ -63,6 +73,8 @@ func NewBlockchain() *Blockchain {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	bc := NewBlockchain()
 
 	bc.AddBlock("Send 1 BTC to Ivan")
