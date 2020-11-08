@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"time"
 	"strconv"
+	"reflect"
 )
 
 type Block struct {
@@ -13,18 +14,32 @@ type Block struct {
 	Data          []byte
 	PrevBlockHash []byte
 	Hash          []byte
+	Nuonce		  int64
 }
 
 func (b *Block) SetHash() {
-	timestamp := []byte(strconv.FormatInt(b.Timestamp, 10))
-	headers := bytes.Join([][]byte{b.PrevBlockHash, b.Data, timestamp}, []byte{})
-	hash := sha256.Sum256(headers)
+	var nuonce_i int64
+	nuonce_i = 0
+	for {
+		timestamp := []byte(strconv.FormatInt(b.Timestamp, 10))
+		nuonce := []byte(strconv.FormatInt(nuonce_i, 10))
+		headers := bytes.Join([][]byte{b.PrevBlockHash, b.Data, timestamp, nuonce}, []byte{})
+		hash := sha256.Sum256(headers)
+	
+		b.Hash = hash[:]
+		if reflect.DeepEqual(b.Hash[0:3],[]byte("000")[0:3]){
+			fmt.Println(b.Hash[0:3])
+			fmt.Println([]byte("000")[0:3])
 
-	b.Hash = hash[:]
+			b.Nuonce = nuonce_i
+			break
+		}
+		nuonce_i++
+	}
 }
 
 func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{time.Now().Unix(), []byte(data), prevBlockHash, []byte{}}
+	block := &Block{time.Now().Unix(), []byte(data), prevBlockHash, []byte{},0}
 	block.SetHash()
 	return block
 }
