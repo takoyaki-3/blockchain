@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"time"
 	"strconv"
-//	"reflect"
 	"math/rand"
 )
 
@@ -77,8 +76,9 @@ func main() {
 
 	bc := NewBlockchain()
 
-	bc.AddBlock("Send 1 BTC to Ivan")
-	bc.AddBlock("Send 2 more BTC to Ivan")
+	for{
+		bc.AddBlock("Hello, block chean!")
+	}
 
 	for _, block := range bc.blocks {
 		fmt.Printf("Prev. hash: %x\n", block.PrevBlockHash)
