@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"./pkg/server"
 	"./pkg/blockchain"
-	"./pkg/blockchain/encoder"
 	"./pkg/blockchain/decoder"
 )
 
@@ -11,14 +11,12 @@ func main(){
 	fmt.Println("start")
 
 	bc := blockchain.LoadChain()
-	block := blockchain.NewBlock(bc,[]string{"./main.go"})
+	server.Init(bc)
 
-	fmt.Println(block)
-
-	encoder.Write(block,"./test.block")
-
-	block = decoder.Read("./test.block")
-	fmt.Println(block)
-
+	// block := blockchain.NewBlock(bc,[]string{"./main.go"})
+	// fmt.Println(block)
+	// index := blockchain.AddBlock(bc,block)
+	// block = decoder.Read("./blocks/"+index+".block")
+	// fmt.Println(block)
 }
 

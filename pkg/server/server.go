@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"fmt"
@@ -7,11 +7,14 @@ import (
 	"net/http"
 	"mime/multipart"
 	"../blockchain"
-	"../blockchain/encoder"
+	// "../blockchain/encoder"
 	"bytes"
 )
 
-func main () {
+var bc blockchain.BlockChain
+
+func Init (bcn blockchain.BlockChain) {
+	bc = bcn
 	var mux *http.ServeMux;
 	mux = http.NewServeMux();
 	mux.HandleFunc("/hello", func (writer http.ResponseWriter, r *http.Request) {
@@ -60,13 +63,14 @@ func upload ( w http.ResponseWriter, r *http.Request) {
 	}
 	uploadedFileName = fileHeader.Filename;
 
-	bc := blockchain.LoadChain()
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, file); err != nil {
     // return nil, err
 	}
 	block := blockchain.NewBlockFromRowfile(bc,buf.Bytes(),uploadedFileName)
-	encoder.Write(block,"./s.block")
+	// encoder.Write(block,"./s.block")
+	index := blockchain.AddBlock(bc,block)
+	fmt.Fprintln(w, "{\"index\":\""+index+"\"}");
 
 	defer file.Close();
 }

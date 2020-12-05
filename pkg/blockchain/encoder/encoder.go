@@ -3,6 +3,7 @@ package encoder
 import (
 	"log"
 	"os"
+	"strconv"
 	"fmt"
 	"encoding/binary"
 	"crypto/sha256"
@@ -81,7 +82,9 @@ func Block2Bytes(block block.Block)[]byte{
 	return append(uint642bytes(uint64(len(b)+8)),b...)
 }
 
-func Write(block block.Block,path string){
+func WriteByte(rowData []byte,generation int)string{
+	index := strconv.Itoa(generation)+"."+Hex(rowData)
+	path := "./blocks/"+index+".block"
 	wf, err := os.Create(path)
 	if err != nil {
 		log.Fatal(err)
@@ -89,14 +92,19 @@ func Write(block block.Block,path string){
 	defer wf.Close()
 
 	// データ部分を書き込み
-	_, err = wf.Write(Block2Bytes(block))
+	_, err = wf.Write(rowData)
 	if err != nil {
-			log.Fatal(err)
+		log.Fatal(err)
 	}
+	return index
 }
 
-func Hex(block block.Block)string{
-	b := Block2Bytes(block)
+func Write(block block.Block,generation int)string{
+	return WriteByte(Block2Bytes(block),generation)
+}
+
+func Hex(block []byte)string{
+	b := block
 	hash := sha256.Sum256(b)
 	hash_s := fmt.Sprintf("%x",hash)
 	return hash_s
