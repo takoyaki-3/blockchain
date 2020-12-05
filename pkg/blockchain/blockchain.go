@@ -61,3 +61,22 @@ func NewBlock(bc BlockChain,filepaths []string)block.Block{
 	}
 	return b
 }
+
+func NewBlockFromRowfile(bc BlockChain,rowfile []byte,filename string)block.Block{
+	b := block.Block{}
+
+	// プロパティ
+	b.Properties = block.Properties{}
+	b.Properties["type"] = "files"
+	for k,v := range bc.LatestHex{
+		b.Properties["previous_hash_"+k] = v
+	}
+	b.Properties["created"] = time.Now().String()
+
+	f := block.File{}
+	f.RowData = rowfile
+	f.Properties = block.Properties{"filename":filename}
+	b.Files = append(b.Files,f)
+
+	return b
+}
