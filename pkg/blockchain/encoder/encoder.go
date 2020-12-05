@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 	"encoding/binary"
-	"../../block"
+	"../block"
 )
 
 func uint642bytes(u uint64)[]byte{

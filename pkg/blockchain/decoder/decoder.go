@@ -4,7 +4,7 @@ import (
 	"os"
 	"log"
 	"encoding/binary"
-	"../../block"
+	"../block"
 )
 
 // Bytes2uint converts []byte to uint64

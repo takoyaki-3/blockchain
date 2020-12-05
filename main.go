@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"./pkg/block"
-	"./pkg/block/encoder"
-	"./pkg/block/decoder"
+	"./pkg/blockchain/block"
+	"./pkg/blockchain/encoder"
+	"./pkg/blockchain/decoder"
 )
 
 func main(){
