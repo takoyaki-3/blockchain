@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"./pkg/server"
 	"./pkg/blockchain"
-	"./pkg/blockchain/decoder"
 )
 
 func main(){
