@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"./pkg/blockchain/block"
+	"./pkg/blockchain"
 	"./pkg/blockchain/encoder"
 	"./pkg/blockchain/decoder"
 )
@@ -10,13 +10,8 @@ import (
 func main(){
 	fmt.Println("start")
 
-	bytes := []byte("hello")
-	fp := block.Properties{}
-	files := []block.File{block.File{fp,bytes}}
-	properties := block.Properties{}
-	properties["hello"]="world"
-
-	block := block.Block{properties,uint64(1),files}
+	bc := blockchain.LoadChain()
+	block := blockchain.NewBlock(bc,[]string{"./main.go"})
 
 	fmt.Println(block)
 
