@@ -3,7 +3,9 @@ package encoder
 import (
 	"log"
 	"os"
+	"fmt"
 	"encoding/binary"
+	"crypto/sha256"
 	"../block"
 )
 
@@ -91,4 +93,11 @@ func Write(block block.Block,path string){
 	if err != nil {
 			log.Fatal(err)
 	}
+}
+
+func Hex(block block.Block)string{
+	b := Block2Bytes(block)
+	hash := sha256.Sum256(b)
+	hash_s := fmt.Sprintf("%x",hash)
+	return hash_s
 }

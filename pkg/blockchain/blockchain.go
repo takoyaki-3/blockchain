@@ -9,10 +9,13 @@ import (
 
 type BlockChain struct{
 	Latest string	// 最新ブロックのインデックス
-	LatestHex string // 最新ブロックのハッシュ
+	LatestHex map[string]string // 最新世代ブロックのハッシュ
 }
 
 func LoadChain()BlockChain{
+
+	// 既にブロックチェーンが存在するか
+
 	return BlockChain{}
 }
 
@@ -20,9 +23,11 @@ func NewBlock(bc BlockChain,filepaths []string)block.Block{
 	b := block.Block{}
 
 	// プロパティ
-	b.Properties = map[string]string{}
+	b.Properties = block.Properties{}
 	b.Properties["type"] = "files"
-	b.Properties["previous_hash_0"] = "hex"
+	for k,v := range bc.LatestHex{
+		b.Properties["previous_hash_"+k] = v
+	}
 	b.Properties["created"] = time.Now().String()
 
 	// ファイルをブロックへ追加
