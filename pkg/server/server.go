@@ -9,6 +9,8 @@ import (
 	"../blockchain"
 	// "../blockchain/encoder"
 	"bytes"
+	"strings"
+	"strconv"
 )
 
 var bc blockchain.BlockChain
@@ -27,6 +29,8 @@ func Init (bcn blockchain.BlockChain) {
 	mux.Handle("/hf", hf);
 	mux . HandleFunc("/upload", upload);
 	mux . HandleFunc("/addstring", addstring);
+	mux . HandleFunc("/read_string", read_string);
+	mux . HandleFunc("/get_file", get_file);
 	mux . HandleFunc("/", index);
 	
 	var server *http.Server;
@@ -94,7 +98,44 @@ func addstring ( w http.ResponseWriter, r *http.Request) {
 		index := blockchain.AddBlock(&bc,block)
 		fmt.Fprintln(w, "{\"index\":\""+index+".0\"}");
 	} else {
-		fmt.Fprintln(w, "data is must.");
+		fmt.Fprintln(w, "data must.");
 	}
+}
 
+func read_string( w http.ResponseWriter, r *http.Request) {
+	// クエリパラメータを取得する
+	queryparm := r.URL.Query()
+
+	if v,ok:=queryparm["index"];ok{
+		// 出力
+		s := strings.Split(v[0], ".")
+		block := blockchain.ReadBlock(v[0])
+		i,_ := strconv.Atoi(s[2])
+		str := string(block.Files[i].RowData)
+		fmt.Fprintln(w, "{\"data\":\""+str+"\"}");
+	} else {
+		fmt.Fprintln(w, "index must.");
+	}
+}
+
+func get_file( w http.ResponseWriter, r *http.Request) {
+	// クエリパラメータを取得する
+	queryparm := r.URL.Query()
+
+	if v,ok:=queryparm["index"];ok{
+		// 出力
+		s := strings.Split(v[0], ".")
+		block := blockchain.ReadBlock(v[0])
+		i,_ := strconv.Atoi(s[2])
+
+		w.Header().Set("Content-Disposition", "attachment; filename="+block.Files[i].Properties["filename"])
+		w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+
+		writer := bytes.NewBuffer(block.Files[i].RowData)
+		io.Copy(w, writer)
+
+		// fmt.Fprintln(w, "{\"data\":\""+str+"\"}");
+	} else {
+		fmt.Fprintln(w, "index must.");
+	}
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 	"./block"
 	"./encoder"
+	"./decoder"
 	"io/ioutil"
 	"strings"
 	"strconv"
@@ -122,6 +123,12 @@ func AddBlock(bc *BlockChain,b block.Block)string{
 	}
 	mu.Unlock()
 	return index
+}
+
+func ReadBlock(index string)block.Block{
+	s := strings.Split(index, ".")
+	block := decoder.Read("./blocks/"+s[0]+"."+s[1]+".block")
+	return block
 }
 
 func dirwalk(dir string) []string {
