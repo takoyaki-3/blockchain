@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  app:
+    image: golang
+    ports:
+      - "11180:11180"
+    volumes:
+      - ./:/volume
+    working_dir: /volume
+    command: bash ./run.sh
