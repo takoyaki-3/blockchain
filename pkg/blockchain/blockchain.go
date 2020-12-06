@@ -49,16 +49,8 @@ func LoadChain()BlockChain{
 	return bc
 }
 
-func NewBlock(bc BlockChain,filepaths []string)block.Block{
+func NewBlock(filepaths []string)block.Block{
 	b := block.Block{}
-
-	// プロパティ
-	b.Properties = block.Properties{}
-	b.Properties["type"] = "files"
-	for k,v := range bc.LatestHex[bc.Latest]{
-		b.Properties["previous_hash_"+k] = v
-	}
-	b.Properties["created"] = time.Now().String()
 
 	// ファイルをブロックへ追加
 	for _,v:=range filepaths{
@@ -92,28 +84,31 @@ func NewBlock(bc BlockChain,filepaths []string)block.Block{
 	return b
 }
 
-func NewBlockFromRowfile(bc BlockChain,rowfile []byte,filename string)block.Block{
-	b := block.Block{}
+func NewBlockFromRowfile(rowfile []byte,filename string)block.Block{
+	f := block.File{}
+	f.RowData = rowfile
+	f.Properties = block.Properties{"filename":filename}
+	return block.Block{block.Properties{"type":"files"},uint64(1),[]block.File{f}}
+}
+func NewBlockFromString(str string)block.Block{
+	f := block.File{}
+	f.RowData = []byte(str)
+	f.Properties = block.Properties{"type":"string"}
+	return block.Block{block.Properties{"type":"string"},uint64(1),[]block.File{f}}
+}
 
-	// プロパティ
+func AddBlock(bc *BlockChain,b block.Block)string{
+
+	// ブロックチェーンに組み込む為のプロパティ付与
 	b.Properties = block.Properties{}
-	b.Properties["type"] = "files"
 	for k,v := range bc.LatestHex[bc.Latest]{
 		b.Properties["previous_hash_"+k] = v
 	}
 	b.Properties["created"] = time.Now().String()
 
-	f := block.File{}
-	f.RowData = rowfile
-	f.Properties = block.Properties{"filename":filename}
-	b.Files = append(b.Files,f)
-
-	return b
-}
-
-func AddBlock(bc BlockChain,block block.Block)string{
-	bc.Latest+=1
-	index := encoder.Write(block,bc.Latest)
+	bc.Latest=bc.Latest+1
+	fmt.Println(bc)
+	index := encoder.Write(b,bc.Latest)
 	if _,ok:=bc.LatestHex[bc.Latest];!ok{
 		bc.LatestHex[bc.Latest]=map[string]string{}
 	}

@@ -26,6 +26,7 @@ func Init (bcn blockchain.BlockChain) {
 	}
 	mux.Handle("/hf", hf);
 	mux . HandleFunc("/upload", upload);
+	mux . HandleFunc("/addstring", addstring);
 	mux . HandleFunc("/", index);
 	
 	var server *http.Server;
@@ -45,6 +46,7 @@ func index (writer http.ResponseWriter , request *http.Request) {
 	t.Execute(writer, struct{}{});
 }
 
+// ファイルアップロードによる登録
 func upload ( w http.ResponseWriter, r *http.Request) {
 	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
 	if  (r.Method != "POST") {
@@ -67,10 +69,32 @@ func upload ( w http.ResponseWriter, r *http.Request) {
 	if _, err := io.Copy(buf, file); err != nil {
     // return nil, err
 	}
-	block := blockchain.NewBlockFromRowfile(bc,buf.Bytes(),uploadedFileName)
+	block := blockchain.NewBlockFromRowfile(buf.Bytes(),uploadedFileName)
 	// encoder.Write(block,"./s.block")
-	index := blockchain.AddBlock(bc,block)
-	fmt.Fprintln(w, "{\"index\":\""+index+"\"}");
+	index := blockchain.AddBlock(&bc,block)
+	fmt.Fprintln(w, "{\"index\":\""+index+".0\"}");
 
 	defer file.Close();
+}
+
+// 文字列の登録
+func addstring ( w http.ResponseWriter, r *http.Request) {
+	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
+	if  (r.Method != "POST" && r.Method != "GET") {
+		fmt.Fprintln(w, "Please access by POST or GET.");
+		return;
+	}
+
+	// クエリパラメータを取得する
+	queryparm := r.URL.Query()
+
+	if v,ok:=queryparm["data"];ok{
+		// 出力
+		block := blockchain.NewBlockFromString(v[0])
+		index := blockchain.AddBlock(&bc,block)
+		fmt.Fprintln(w, "{\"index\":\""+index+".0\"}");
+	} else {
+		fmt.Fprintln(w, "data is must.");
+	}
+
 }
