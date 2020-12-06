@@ -2,8 +2,29 @@
 
 ## Usage
 ```
-go run block.go
+go run main.go
 ```
+
+## 使い方
+
+- GUIによるファイルアップロード
+``/``
+
+- ファイル書き込み
+``/upload``
+-- file : アップロードするファイル
+
+- ファイル取得
+``/get_file``
+-- index : トランザクションID
+
+- 文字列書き込み
+``/add_string``
+-- data : 書き込む文字列
+
+- 文字列読み取り
+``/read_string``
+-- index : トランザクションID
 
 ## To Do
 
