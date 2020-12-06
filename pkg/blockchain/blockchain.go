@@ -10,6 +10,7 @@ import (
 	"strings"
 	"strconv"
 	"fmt"
+	"sync"
 )
 
 type BlockChain struct{
@@ -97,6 +98,8 @@ func NewBlockFromString(str string)block.Block{
 	return block.Block{block.Properties{"type":"string"},uint64(1),[]block.File{f}}
 }
 
+var mu sync.Mutex
+
 func AddBlock(bc *BlockChain,b block.Block)string{
 
 	// ブロックチェーンに組み込む為のプロパティ付与
@@ -106,6 +109,7 @@ func AddBlock(bc *BlockChain,b block.Block)string{
 	}
 	b.Properties["created"] = time.Now().String()
 
+	mu.Lock()
 	bc.Latest+=1
 	index := encoder.Write(b,bc.Latest)
 	if _,ok:=bc.LatestHex[bc.Latest];!ok{
@@ -113,7 +117,10 @@ func AddBlock(bc *BlockChain,b block.Block)string{
 	}
 	s := strings.Split(index, ".")
 	bc.LatestHex[bc.Latest][s[0]+"."+s[1]] = s[1]
-	delete(bc.LatestHex,bc.Latest-1)
+	if _,ok:=bc.LatestHex[bc.Latest-5];ok{
+		delete(bc.LatestHex,bc.Latest-5)
+	}
+	mu.Unlock()
 	return index
 }
 
