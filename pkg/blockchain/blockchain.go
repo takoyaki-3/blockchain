@@ -106,14 +106,14 @@ func AddBlock(bc *BlockChain,b block.Block)string{
 	}
 	b.Properties["created"] = time.Now().String()
 
-	bc.Latest=bc.Latest+1
-	fmt.Println(bc)
+	bc.Latest+=1
 	index := encoder.Write(b,bc.Latest)
 	if _,ok:=bc.LatestHex[bc.Latest];!ok{
 		bc.LatestHex[bc.Latest]=map[string]string{}
 	}
 	s := strings.Split(index, ".")
 	bc.LatestHex[bc.Latest][s[0]+"."+s[1]] = s[1]
+	delete(bc.LatestHex,bc.Latest-1)
 	return index
 }
 
