@@ -153,7 +153,7 @@ func dirwalk(dir string) []string {
 	return paths
 }
 
-func MakeLinkBlock(bc *BlockChain,publick_chain string){
+func MakeLinkBlock(bc *BlockChain,publick_chain string)string{
 	// 何世代目から作成するか
 	paths := dirwalk("./blocks")
 
@@ -194,6 +194,7 @@ func MakeLinkBlock(bc *BlockChain,publick_chain string){
 	rowJSON := string(link.JsonEncode(linkBlock))
 
 	fmt.Println(rowJSON)
-
 	fmt.Println(encoder.Hex([]byte(rowJSON)))
+
+	return rowJSON
 }

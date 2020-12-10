@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"mime/multipart"
 	"../blockchain"
-	// "../blockchain/encoder"
+	"../blockchain/encoder"
 	"bytes"
 	"strings"
 	"strconv"
+	"../blockchain/link"
 )
 
 var bc blockchain.BlockChain
@@ -142,5 +143,26 @@ func get_file( w http.ResponseWriter, r *http.Request) {
 }
 
 func makeLinkBlock( w http.ResponseWriter, r *http.Request){
-	blockchain.MakeLinkBlock(&bc,"LTC")
+	queryparm := r.URL.Query()
+	if v,ok:=queryparm["key"];ok{
+		if v[0]=="iccd" {
+			rowJSON := blockchain.MakeLinkBlock(&bc,"LTC")
+			hex := encoder.Hex([]byte(rowJSON))
+			fmt.Println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+			tx := link.Write2PublicBlockchain(hex)
+			fmt.Println(tx)
+
+			// POSTされたファイルデータを取得する
+			buf := []byte(rowJSON)
+			block := blockchain.NewBlockFromRowfile(buf,"link_block")
+			block.Properties["type"]="_link_block"
+			index := blockchain.AddBlock(&bc,block)
+
+			fmt.Fprintln(w, "{\"transaction\":\""+tx+"\",\"JSON\":"+rowJSON+",\"index\":\""+index+"\"}");
+		} else {
+			fmt.Fprintln(w, "key is uncollect.");
+		}
+	} else {
+		fmt.Fprintln(w, "Please input key.");
+	}
 }
