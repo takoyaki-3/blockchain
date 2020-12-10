@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"fmt"
 	"sync"
+	"./link"
 )
 
 type BlockChain struct{
@@ -22,6 +23,13 @@ type BlockChain struct{
 func LoadChain()BlockChain{
 
 	bc := BlockChain{}
+
+	_, err := os.Stat("hoge.txt")
+	if err != nil {
+    if err := os.Mkdir("./blocks", 0777); err != nil {
+			fmt.Println(err)
+		}
+	}
 
 	// 既にブロックチェーンが存在するか
 	paths := dirwalk("./blocks")
@@ -143,4 +151,49 @@ func dirwalk(dir string) []string {
 	}
 
 	return paths
+}
+
+func MakeLinkBlock(bc *BlockChain,publick_chain string){
+	// 何世代目から作成するか
+	paths := dirwalk("./blocks")
+
+	indexes := [][]string{}
+	for _,v:=range paths{
+		s := strings.Split(v, ".")
+		gen,_ := strconv.Atoi(s[0])
+		for len(indexes) <= gen{
+			indexes = append(indexes,[]string{})
+		}
+		indexes[gen] = append(indexes[gen],v)
+	}
+
+	start := len(indexes)-1
+	linkBlock := link.LinkBlock{}
+
+	for ;start>=0;start--{
+		flag := false
+		for _,v:=range indexes[start]{
+			s := strings.Split(v, ".")
+			b := link.Block{}
+			b.Id = v
+			b.Hex = s[1]
+			linkBlock.Blocks = append(linkBlock.Blocks,b)
+
+			fmt.Println(v)
+			block := decoder.Read("./blocks/"+v)
+			if block.Properties["type"] == publick_chain+"_"+"link_block"{
+				flag = true
+			}
+		}
+		if flag{
+			break
+		}
+	}
+
+	linkBlock.Created = time.Now().String()
+	rowJSON := string(link.JsonEncode(linkBlock))
+
+	fmt.Println(rowJSON)
+
+	fmt.Println(encoder.Hex([]byte(rowJSON)))
 }

@@ -31,6 +31,7 @@ func Init (bcn blockchain.BlockChain) {
 	mux . HandleFunc("/addstring", addstring);
 	mux . HandleFunc("/read_string", read_string);
 	mux . HandleFunc("/get_file", get_file);
+	mux . HandleFunc("/link_blockchain",makeLinkBlock)
 	mux . HandleFunc("/", index);
 	
 	var server *http.Server;
@@ -138,4 +139,8 @@ func get_file( w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintln(w, "index must.");
 	}
+}
+
+func makeLinkBlock( w http.ResponseWriter, r *http.Request){
+	blockchain.MakeLinkBlock(&bc,"LTC")
 }
