@@ -54,6 +54,10 @@ func index (writer http.ResponseWriter , request *http.Request) {
 
 // ファイルアップロードによる登録
 func upload ( w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
+
 	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
 	if  (r.Method != "POST") {
 		fmt.Fprintln(w, "Please access by POST.");
@@ -64,6 +68,7 @@ func upload ( w http.ResponseWriter, r *http.Request) {
 	var e error;
 	var uploadedFileName string;
 	// POSTされたファイルデータを取得する
+	// fmt.Println(r.FormFile("file"))
 	file , fileHeader , e = r.FormFile("file");
 	if (e != nil) {
 		fmt.Fprintln(w, "error occurred in uploading file.");
@@ -85,6 +90,10 @@ func upload ( w http.ResponseWriter, r *http.Request) {
 
 // 文字列の登録
 func addstring ( w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
+
 	// このハンドラ関数へのアクセスはPOSTメソッドのみ認める
 	if  (r.Method != "POST" && r.Method != "GET") {
 		fmt.Fprintln(w, "Please access by POST or GET.");
@@ -105,6 +114,10 @@ func addstring ( w http.ResponseWriter, r *http.Request) {
 }
 
 func read_string( w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
+
 	// クエリパラメータを取得する
 	queryparm := r.URL.Query()
 
@@ -121,6 +134,10 @@ func read_string( w http.ResponseWriter, r *http.Request) {
 }
 
 func get_file( w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
+
 	// クエリパラメータを取得する
 	queryparm := r.URL.Query()
 
@@ -143,6 +160,10 @@ func get_file( w http.ResponseWriter, r *http.Request) {
 }
 
 func makeLinkBlock( w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
+
 	queryparm := r.URL.Query()
 	if v,ok:=queryparm["key"];ok{
 		if v[0]=="iccd" {
